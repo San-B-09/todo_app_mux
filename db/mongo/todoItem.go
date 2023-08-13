@@ -79,3 +79,23 @@ func (m *mongoService) DeleteItemFromDb(ctx context.Context, itemId string) erro
 
 	return nil
 }
+
+func (m *mongoService) UpdateItemCompletedStatus(ctx context.Context, itemId string, itemCompleteStatus bool) error {
+	objId, objectIdErr := primitive.ObjectIDFromHex(itemId)
+	if objectIdErr != nil {
+		log.Println(ctx, objectIdErr)
+		return objectIdErr
+	}
+	updateObject := bson.M{
+		"isCompleted": itemCompleteStatus,
+	}
+
+	collection := m.db.Database(defaultDb).Collection(todoListCollection)
+	_, err := collection.UpdateByID(ctx, objId, bson.M{"$set": updateObject})
+	if err != nil {
+		log.Println(ctx, err)
+		return err
+	}
+
+	return nil
+}

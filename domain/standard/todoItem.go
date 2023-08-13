@@ -45,3 +45,23 @@ func (s *domainService) DeleteItemFromTodo(ctx context.Context, itemId string) e
 
 	return nil
 }
+
+func (s *domainService) MarkItemComplete(ctx context.Context, itemId string) error {
+	err := s.db.UpdateItemCompletedStatus(ctx, itemId, true)
+	if err != nil {
+		log.Println(ctx, err)
+		return err
+	}
+
+	return nil
+}
+
+func (s *domainService) MarkItemIncomplete(ctx context.Context, itemId string) error {
+	err := s.db.UpdateItemCompletedStatus(ctx, itemId, false)
+	if err != nil {
+		log.Println(ctx, err)
+		return err
+	}
+
+	return nil
+}

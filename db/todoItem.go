@@ -10,4 +10,5 @@ type ITodoItem interface {
 	GetItemsFromDb(ctx context.Context) ([]models.TodoListItem, error)
 	UpdateItemFromDb(ctx context.Context, itemId, item string) error
 	DeleteItemFromDb(ctx context.Context, itemId string) error
+	UpdateItemCompletedStatus(ctx context.Context, itemId string, itemCompleteStatus bool) error
 }

@@ -10,4 +10,6 @@ type ITodoItem interface {
 	GetTodoItems(ctx context.Context) ([]models.TodoListItem, error)
 	UpdateItemFromTodo(ctx context.Context, itemId, item string) error
 	DeleteItemFromTodo(ctx context.Context, itemId string) error
+	MarkItemComplete(ctx context.Context, itemId string) error
+	MarkItemIncomplete(ctx context.Context, itemId string) error
 }

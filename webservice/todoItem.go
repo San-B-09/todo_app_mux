@@ -89,3 +89,43 @@ func (s *webService) DeleteItem(w http.ResponseWriter, r *http.Request) {
 	ReturnOKResponse(ctx, w, "success")
 	return
 }
+
+func (s *webService) MarkItemComplete(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	itemId := mux.Vars(r)["item-id"]
+	if itemId == "" {
+		log.Println(ctx, "Empty item id")
+		ReturnErrorResponse(ctx, w, http.StatusBadRequest, "Item Id not found")
+		return
+	}
+
+	err := s.domain.MarkItemComplete(ctx, itemId)
+	if err != nil {
+		log.Println(ctx, err)
+		ReturnErrorResponse(ctx, w, http.StatusInternalServerError, "Error adding item to todo list")
+		return
+	}
+
+	ReturnOKResponse(ctx, w, "success")
+	return
+}
+
+func (s *webService) MarkItemIncomplete(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	itemId := mux.Vars(r)["item-id"]
+	if itemId == "" {
+		log.Println(ctx, "Empty item id")
+		ReturnErrorResponse(ctx, w, http.StatusBadRequest, "Item Id not found")
+		return
+	}
+
+	err := s.domain.MarkItemIncomplete(ctx, itemId)
+	if err != nil {
+		log.Println(ctx, err)
+		ReturnErrorResponse(ctx, w, http.StatusInternalServerError, "Error adding item to todo list")
+		return
+	}
+
+	ReturnOKResponse(ctx, w, "success")
+	return
+}
