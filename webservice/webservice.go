@@ -4,11 +4,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"github.com/google/uuid"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"log"
 	"net/http"
+	"strings"
 	"todo_app_mux/domain"
+	"todo_app_mux/log"
 )
 
 type webService struct {
@@ -29,7 +31,7 @@ func (s *webService) Start(ctx context.Context) {
 	serverHandler := handlers.CORS()(router)
 	err := http.ListenAndServe(":8080", serverHandler)
 	if err != nil {
-		log.Fatalln(ctx, "Error starting the server:", err.Error())
+		log.GenericError(ctx, err, map[string]interface{}{"msg": "Error starting the server:"})
 	}
 
 	return
@@ -45,16 +47,18 @@ func ReturnOKResponse(ctx context.Context, w http.ResponseWriter, data interface
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	ctxRequestId, _ := ctx.Value(requestId).(string)
+	w.Header().Set("requestId", ctxRequestId)
 	w.WriteHeader(http.StatusOK)
 	var buf = new(bytes.Buffer)
 	enc := json.NewEncoder(buf)
 	err := enc.Encode(response)
 	if err != nil {
-		log.Fatalln(ctx, err)
+		log.GenericError(ctx, err)
 	}
 	_, err = w.Write(buf.Bytes())
 	if err != nil {
-		log.Fatalln(ctx, err)
+		log.GenericError(ctx, err)
 	}
 }
 
@@ -67,21 +71,28 @@ func ReturnErrorResponse(ctx context.Context, w http.ResponseWriter, errorCode i
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	ctxRequestId, _ := ctx.Value(requestId).(string)
+	w.Header().Set("requestId", ctxRequestId)
 	w.WriteHeader(http.StatusOK)
 	var buf = new(bytes.Buffer)
 	enc := json.NewEncoder(buf)
 	err := enc.Encode(response)
 	if err != nil {
-		log.Fatalln(ctx, err)
+		log.GenericError(ctx, err)
 	}
 	_, err = w.Write(buf.Bytes())
 	if err != nil {
-		log.Fatalln(ctx, err)
+		log.GenericError(ctx, err)
 	}
 }
 
-func (s *webService) Ping(w http.ResponseWriter, _ *http.Request) {
-	ctx := context.TODO()
-	log.Println(ctx, "Server Pinged!")
+func UpgradeContext(ctx context.Context) context.Context {
+	newRequestID := strings.Replace(uuid.New().String(), "-", "", -1)
+	return context.WithValue(ctx, requestId, newRequestID)
+}
+
+func (s *webService) Ping(w http.ResponseWriter, r *http.Request) {
+	ctx := UpgradeContext(r.Context())
+	log.GenericInfo(ctx, "Server Pinged")
 	ReturnOKResponse(ctx, w, "pong")
 }

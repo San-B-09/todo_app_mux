@@ -2,24 +2,25 @@ package webservice
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/gorilla/mux"
-	"log"
 	"net/http"
+	"todo_app_mux/log"
 )
 
 func (s *webService) AddItem(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx := UpgradeContext(r.Context())
 	var item todoItem
 	err := json.NewDecoder(r.Body).Decode(&item)
 	if err != nil {
-		log.Println(ctx, err)
+		log.GenericError(ctx, err)
 		ReturnErrorResponse(ctx, w, http.StatusBadRequest, "Error decoding request")
 		return
 	}
 
 	err = s.domain.AddItemToList(ctx, item.Item)
 	if err != nil {
-		log.Println(ctx, err)
+		log.GenericError(ctx, err)
 		ReturnErrorResponse(ctx, w, http.StatusInternalServerError, "Error adding item to todo list")
 		return
 	}
@@ -29,11 +30,11 @@ func (s *webService) AddItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *webService) GetItems(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx := UpgradeContext(r.Context())
 
 	todoItems, err := s.domain.GetTodoItems(ctx)
 	if err != nil {
-		log.Println(ctx, err)
+		log.GenericError(ctx, err)
 		ReturnErrorResponse(ctx, w, http.StatusInternalServerError, "Error fetching todo items")
 		return
 	}
@@ -43,10 +44,10 @@ func (s *webService) GetItems(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *webService) UpdateItem(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx := UpgradeContext(r.Context())
 	itemId := mux.Vars(r)["item-id"]
 	if itemId == "" {
-		log.Println(ctx, "Empty item id")
+		log.GenericError(ctx, errors.New("Empty item id"))
 		ReturnErrorResponse(ctx, w, http.StatusBadRequest, "Item Id not found")
 		return
 	}
@@ -54,14 +55,14 @@ func (s *webService) UpdateItem(w http.ResponseWriter, r *http.Request) {
 	var item todoItem
 	err := json.NewDecoder(r.Body).Decode(&item)
 	if err != nil {
-		log.Println(ctx, err)
+		log.GenericError(ctx, err)
 		ReturnErrorResponse(ctx, w, http.StatusBadRequest, "Error decoding request")
 		return
 	}
 
 	err = s.domain.UpdateItemFromTodo(ctx, itemId, item.Item)
 	if err != nil {
-		log.Println(ctx, err)
+		log.GenericError(ctx, err)
 		ReturnErrorResponse(ctx, w, http.StatusInternalServerError, "Error adding item to todo list")
 		return
 	}
@@ -71,17 +72,17 @@ func (s *webService) UpdateItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *webService) DeleteItem(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx := UpgradeContext(r.Context())
 	itemId := mux.Vars(r)["item-id"]
 	if itemId == "" {
-		log.Println(ctx, "Empty item id")
+		log.GenericError(ctx, errors.New("Empty item id"))
 		ReturnErrorResponse(ctx, w, http.StatusBadRequest, "Item Id not found")
 		return
 	}
 
 	err := s.domain.DeleteItemFromTodo(ctx, itemId)
 	if err != nil {
-		log.Println(ctx, err)
+		log.GenericError(ctx, err)
 		ReturnErrorResponse(ctx, w, http.StatusInternalServerError, "Error adding item to todo list")
 		return
 	}
@@ -91,17 +92,17 @@ func (s *webService) DeleteItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *webService) MarkItemComplete(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx := UpgradeContext(r.Context())
 	itemId := mux.Vars(r)["item-id"]
 	if itemId == "" {
-		log.Println(ctx, "Empty item id")
+		log.GenericError(ctx, errors.New("Empty item id"))
 		ReturnErrorResponse(ctx, w, http.StatusBadRequest, "Item Id not found")
 		return
 	}
 
 	err := s.domain.MarkItemComplete(ctx, itemId)
 	if err != nil {
-		log.Println(ctx, err)
+		log.GenericError(ctx, err)
 		ReturnErrorResponse(ctx, w, http.StatusInternalServerError, "Error adding item to todo list")
 		return
 	}
@@ -111,17 +112,17 @@ func (s *webService) MarkItemComplete(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *webService) MarkItemIncomplete(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx := UpgradeContext(r.Context())
 	itemId := mux.Vars(r)["item-id"]
 	if itemId == "" {
-		log.Println(ctx, "Empty item id")
+		log.GenericError(ctx, errors.New("Empty item id"))
 		ReturnErrorResponse(ctx, w, http.StatusBadRequest, "Item Id not found")
 		return
 	}
 
 	err := s.domain.MarkItemIncomplete(ctx, itemId)
 	if err != nil {
-		log.Println(ctx, err)
+		log.GenericError(ctx, err)
 		ReturnErrorResponse(ctx, w, http.StatusInternalServerError, "Error adding item to todo list")
 		return
 	}
