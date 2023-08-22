@@ -14,8 +14,7 @@ import (
 func main() {
 	ctx := context.Background()
 
-	mongoClient := mongo.NewClient(ctx, "mongodb://localhost:27017/")
-	mongoService := mongo.New(mongoClient)
+	mongoService := mongo.New(ctx, "mongodb://localhost:27017/")
 	domainService := standard.New(mongoService)
 	webService := webservice.New(domainService)
 	webService.Start(ctx)

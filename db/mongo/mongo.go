@@ -12,17 +12,14 @@ type mongoService struct {
 	db mongo.Client
 }
 
-func New(dbClient mongo.Client) db.Idb {
-	return &mongoService{
-		db: dbClient,
-	}
-}
-
-func NewClient(ctx context.Context, mongoUrl string) mongo.Client {
+func New(ctx context.Context, mongoUrl string) db.Idb {
 	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoUrl))
 	if err != nil {
 		log.Fatalf("Error initiating mongo client")
+		return &mongoService{}
 	}
 
-	return *mongoClient
+	return &mongoService{
+		db: *mongoClient,
+	}
 }
