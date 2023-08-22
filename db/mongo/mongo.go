@@ -12,7 +12,7 @@ type mongoService struct {
 	db mongo.Client
 }
 
-func New(dbClient mongo.Client) db.IMongoService {
+func New(dbClient mongo.Client) db.Idb {
 	return &mongoService{
 		db: dbClient,
 	}

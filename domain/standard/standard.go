@@ -6,10 +6,10 @@ import (
 )
 
 type domainService struct {
-	db db.IMongoService
+	db db.Idb
 }
 
-func New(dbService db.IMongoService) domain.IDomainService {
+func New(dbService db.Idb) domain.IDomainService {
 	return &domainService{
 		db: dbService,
 	}

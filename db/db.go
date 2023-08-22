@@ -1,5 +1,5 @@
 package db
 
-type IMongoService interface {
+type Idb interface {
 	ITodoItem
 }
