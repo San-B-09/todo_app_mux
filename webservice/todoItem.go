@@ -6,11 +6,12 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"todo_app_mux/log"
+	"todo_app_mux/models"
 )
 
 func (s *webService) AddItem(w http.ResponseWriter, r *http.Request) {
 	ctx := UpgradeContext(r.Context())
-	var item todoItem
+	var item models.TodoListItem
 	err := json.NewDecoder(r.Body).Decode(&item)
 	if err != nil {
 		log.GenericError(ctx, err)
@@ -52,7 +53,7 @@ func (s *webService) UpdateItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var item todoItem
+	var item models.TodoListItem
 	err := json.NewDecoder(r.Body).Decode(&item)
 	if err != nil {
 		log.GenericError(ctx, err)

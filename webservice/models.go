@@ -9,7 +9,3 @@ type httpResponseMeta struct {
 	Code    int64  `json:"code"`
 	Message string `json:"message"`
 }
-
-type todoItem struct {
-	Item string `json:"item"`
-}
